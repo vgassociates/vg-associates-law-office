@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -67,9 +70,113 @@ const advocates = [
 ];
 
 export default function Home() {
+    const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [checkingDisclaimer, setCheckingDisclaimer] = useState(true);
+
+  useEffect(() => {
+    const agreed = localStorage.getItem("vgassociates_disclaimer_agreed");
+
+    if (agreed === "true") {
+      setShowDisclaimer(false);
+    }
+
+    setCheckingDisclaimer(false);
+  }, []);
+
+  const agreeToDisclaimer = () => {
+    localStorage.setItem("vgassociates_disclaimer_agreed", "true");
+    setShowDisclaimer(false);
+  };
+
+  if (checkingDisclaimer) {
+    return null;
+  }
   return (
-    <>
-      <nav className="nav">
+  <>
+    {showDisclaimer && (
+      <div className="disclaimer-overlay">
+        <div className="disclaimer-panel">
+
+          <div className="disclaimer-logo">
+            <Image
+              src="/logo.svg"
+              alt="V G ASSOCIATES"
+              width={64}
+              height={64}
+            />
+          </div>
+
+          <div className="disclaimer-office">
+            V G ASSOCIATES
+          </div>
+
+          <div className="disclaimer-title">
+            DISCLAIMER
+          </div>
+
+          <div className="disclaimer-content">
+
+            <p>
+              The rules of the Bar Council of India restrict advocates
+              from soliciting work or advertising, directly or indirectly.
+            </p>
+
+            <p>
+              By clicking on <strong>“I AGREE”</strong>, the user acknowledges that:
+            </p>
+
+            <ul>
+              <li>
+                The user wishes to obtain information about
+                <strong> V G ASSOCIATES, its advocates, areas of legal practice
+                and office</strong>, solely for the user's own information and use.
+              </li>
+
+              <li>
+                The information contained on this website is made available
+                to the user at the user's specific request. Any access to,
+                transmission, receipt or use of this website, and any information
+                obtained or material viewed or downloaded from it, is at the user's
+                own volition and does not create, and is not intended to create,
+                any advocate-client relationship.
+              </li>
+
+              <li>
+                None of the information contained on this website constitutes
+                a legal opinion or legal advice.
+              </li>
+
+              <li>
+                The information provided on this website is for general
+                informational purposes and should not be relied upon as a
+                substitute for obtaining independent legal advice in relation
+                to any specific legal matter.
+              </li>
+            </ul>
+
+            <p>
+              <strong>V G ASSOCIATES</strong> shall not be responsible for any
+              consequence arising from any action taken by a user in reliance
+              upon information or material contained on this website. Persons
+              having specific legal concerns should seek independent legal advice
+              appropriate to their circumstances.
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            className="disclaimer-agree"
+            onClick={agreeToDisclaimer}
+          >
+            I AGREE
+          </button>
+
+        </div>
+      </div>
+    )}
+
+    <nav className="nav">
         <div className="container nav-inner">
           <a className="brand" href="#">
             <Image
