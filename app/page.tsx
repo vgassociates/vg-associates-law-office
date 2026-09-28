@@ -16,12 +16,12 @@ import {
 const practices = [
   [
     "Civil Disputes",
-    "Legal assistance and representation in civil disputes, property matters and related proceedings.",
+    "Legal assistance and representation in civil suits, recovery matters, injunctions and other civil proceedings.",
   ],
   [
-    "Criminal Matters",
-    "Legal representation and assistance in criminal matters, subject to the facts and applicable law.",
-  ],
+  "Criminal Matters",
+  "Legal representation and assistance in criminal matters, subject to the facts and applicable law.",
+],
   [
     "Property & Land",
     "Guidance and representation concerning property, land, documentation and related disputes.",
@@ -82,6 +82,7 @@ export default function Home() {
 
     setCheckingDisclaimer(false);
   }, []);
+  
 
   const agreeToDisclaimer = () => {
     localStorage.setItem("vgassociates_disclaimer_agreed", "true");
@@ -245,7 +246,7 @@ export default function Home() {
       <section id="about" className="section">
         <div className="container about">
           <div>
-            <div className="eyebrow">The Office</div>
+  <div className="eyebrow">The Office</div>
 
             <h2>About V G ASSOCIATES</h2>
 
@@ -397,9 +398,9 @@ export default function Home() {
             </div>
 
             <p className="section-intro">
-              Select the area that best describes the legal
-              assistance you are looking for.
-            </p>
+  Information about the areas of legal practice in which
+  V G ASSOCIATES provides legal assistance and representation.
+</p>
           </div>
 
           <div className="grid">
