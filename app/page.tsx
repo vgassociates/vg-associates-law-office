@@ -194,7 +194,7 @@ export default function Home() {
             <a href="#advocates">Advocates</a>
             <a href="#practice">Legal Services</a>
             <a href="#facilities">Facilities</a>
-            <a href="#appointment">Book Appointment</a>
+            <a href="/client">Book Appointment</a>
             <a href="#contact">Contact</a>
             <a href="/admin">Admin</a>
           </div>
@@ -228,7 +228,7 @@ export default function Home() {
 </p>
 
     <div className="actions">
-      <a className="btn gold" href="#appointment">
+      <a className="btn gold" href="/client">
         Book an Appointment
         <ArrowRight size={16} />
       </a>

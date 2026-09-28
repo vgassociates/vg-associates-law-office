@@ -8,11 +8,10 @@ type Appointment = {
   client_id: string | null;
   appointment_date: string;
   appointment_time: string | null;
-  purpose: string | null;
   status: string;
-  notes: string | null;
   client_name?: string;
   client_phone?: string;
+  client_email?: string;
 };
 
 type CaseRow = {
@@ -38,77 +37,74 @@ export default function Admin() {
 
   const [tab, setTab] = useState("dashboard");
 
-  const [clients, setClients] = useState<
-  {
-    id: string;
-    full_name: string;
-    phone: string;
-  }[]
->([]);
+  const [appointments, setAppointments] =
+    useState<Appointment[]>([]);
 
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [appointmentClientId, setAppointmentClientId] =
-  useState("");
+  const [cases, setCases] =
+    useState<CaseRow[]>([]);
 
-const [appointmentDate, setAppointmentDate] =
-  useState("");
+  const [loading, setLoading] =
+    useState(false);
 
-const [appointmentTime, setAppointmentTime] =
-  useState("");
+  const [loadingData, setLoadingData] =
+    useState(false);
 
-const [appointmentPurpose, setAppointmentPurpose] =
-  useState("");
+  const [savingCase, setSavingCase] =
+    useState<string | null>(null);
 
-const [appointmentNotes, setAppointmentNotes] =
-  useState("");
+  const [savingAdvocate, setSavingAdvocate] =
+    useState<string | null>(null);
 
-const [appointmentStatus, setAppointmentStatus] =
-  useState("Pending");
+  const [showCaseForm, setShowCaseForm] =
+    useState(false);
 
-const [savingAppointment, setSavingAppointment] =
-  useState(false);
-  const [cases, setCases] = useState<CaseRow[]>([]);
+  const [caseNumber, setCaseNumber] =
+    useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [loadingData, setLoadingData] = useState(false);
+  const [caseClient, setCaseClient] =
+    useState("");
 
-  const [savingCase, setSavingCase] = useState<string | null>(null);
-  const [savingAdvocate, setSavingAdvocate] = useState<string | null>(null);
+  const [caseTitle, setCaseTitle] =
+    useState("");
 
-  const [showCaseForm, setShowCaseForm] = useState(false);
+  const [caseStatus, setCaseStatus] =
+    useState("unassigned");
 
-  const [caseNumber, setCaseNumber] = useState("");
-  const [caseClient, setCaseClient] = useState("");
-  const [caseTitle, setCaseTitle] = useState("");
-  const [caseStatus, setCaseStatus] = useState("unassigned");
-  const [caseAdvocate, setCaseAdvocate] = useState("");
+  const [caseAdvocate, setCaseAdvocate] =
+    useState("");
 
   useEffect(() => {
     let mounted = true;
 
     supabase.auth.getSession().then(({ data }) => {
       if (mounted) {
-      setSession(data.session);
+        setSession(data.session);
 
-console.log("NEW LOGIN SESSION:", data.session);
-console.log(
-  "JWT EXPIRES AT:",
-  data.session?.expires_at
-    ? new Date(
-        data.session.expires_at * 1000
-      ).toString()
-    : "NO EXPIRY"
-);
+        console.log(
+          "NEW LOGIN SESSION:",
+          data.session
+        );
+
+        console.log(
+          "JWT EXPIRES AT:",
+          data.session?.expires_at
+            ? new Date(
+                data.session.expires_at * 1000
+              ).toString()
+            : "NO EXPIRY"
+        );
       }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      if (mounted) {
-        setSession(newSession);
+    } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        if (mounted) {
+          setSession(newSession);
+        }
       }
-    });
+    );
 
     return () => {
       mounted = false;
@@ -116,29 +112,32 @@ console.log(
     };
   }, []);
 
-  async function login(e: React.FormEvent<HTMLFormElement>) {
+  async function login(
+    e: React.FormEvent<HTMLFormElement>
+  ) {
     e.preventDefault();
 
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     setLoading(false);
 
     if (error) {
-  alert(error.message);
-  return;
-}
+      alert(error.message);
+      return;
+    }
 
-setSession(data.session);
-
+    setSession(data.session);
   }
 
   async function logout() {
-    const { error } = await supabase.auth.signOut();
+    const { error } =
+      await supabase.auth.signOut();
 
     if (error) {
       alert(error.message);
@@ -151,11 +150,11 @@ setSession(data.session);
   }
 
   async function load() {
-  setLoadingData(true);
+    setLoadingData(true);
 
-  /*
-   * LOAD APPOINTMENTS
-   */
+    /*
+     * LOAD APPOINTMENTS
+     */
     const appointmentsResult = await supabase
       .from("appointments")
       .select(
@@ -164,9 +163,7 @@ setSession(data.session);
         client_id,
         appointment_date,
         appointment_time,
-        purpose,
-        status,
-        notes
+        status
         `
       )
       .order("appointment_date", {
@@ -177,26 +174,27 @@ setSession(data.session);
       });
 
     if (appointmentsResult.error) {
-  console.error(
-    "Appointments error:",
-    JSON.stringify(
-      appointmentsResult.error,
-      null,
-      2
-    )
-  );
+      console.error(
+        "Appointments error:",
+        JSON.stringify(
+          appointmentsResult.error,
+          null,
+          2
+        )
+      );
 
-  alert(
-    "Appointments error:\n" +
-      JSON.stringify(
-        appointmentsResult.error,
-        null,
-        2
-      )
-  );
-}
+      alert(
+        "Appointments error:\n" +
+          JSON.stringify(
+            appointmentsResult.error,
+            null,
+            2
+          )
+      );
+    }
 
-    let loadedAppointments: Appointment[] = [];
+    let loadedAppointments: Appointment[] =
+      [];
 
     if (appointmentsResult.data) {
       loadedAppointments =
@@ -208,24 +206,29 @@ setSession(data.session);
       const clientIds = Array.from(
         new Set(
           loadedAppointments
-            .map((appointment) => appointment.client_id)
+            .map(
+              (appointment) =>
+                appointment.client_id
+            )
             .filter(
-              (clientId): clientId is string =>
+              (
+                clientId
+              ): clientId is string =>
                 Boolean(clientId)
             )
         )
       );
 
       /*
-       * Load client names and phone numbers separately.
-       *
-       * This avoids relying on Supabase's automatic
-       * foreign-key relationship syntax.
+       * Load client names, phone numbers
+       * and email addresses separately.
        */
       if (clientIds.length > 0) {
         const clientsResult = await supabase
           .from("clients")
-          .select("id, full_name, phone")
+          .select(
+            "id, full_name, phone, email"
+          )
           .in("id", clientIds);
 
         if (clientsResult.error) {
@@ -239,58 +242,60 @@ setSession(data.session);
             {
               full_name: string;
               phone: string;
+              email: string | null;
             }
           >();
 
-          clientsResult.data.forEach((client) => {
-            clientsMap.set(client.id, {
-              full_name: client.full_name,
-              phone: client.phone,
-            });
-          });
+          clientsResult.data.forEach(
+            (client) => {
+              clientsMap.set(client.id, {
+                full_name:
+                  client.full_name,
+                phone: client.phone,
+                email: client.email,
+              });
+            }
+          );
 
           loadedAppointments =
-            loadedAppointments.map((appointment) => {
-              const client = appointment.client_id
-                ? clientsMap.get(appointment.client_id)
-                : undefined;
+            loadedAppointments.map(
+              (appointment) => {
+                const client =
+                  appointment.client_id
+                    ? clientsMap.get(
+                        appointment.client_id
+                      )
+                    : undefined;
 
-              return {
-                ...appointment,
-                client_name:
-                  client?.full_name || "Unknown client",
-                client_phone:
-                  client?.phone || "—",
-              };
-            });
+                return {
+                  ...appointment,
+                  client_name:
+                    client?.full_name ||
+                    "Unknown client",
+                  client_phone:
+                    client?.phone || "—",
+                  client_email:
+                    client?.email || "—",
+                };
+              }
+            );
         }
       } else {
         loadedAppointments =
-          loadedAppointments.map((appointment) => ({
-            ...appointment,
-            client_name: "Not linked",
-            client_phone: "—",
-          }));
+          loadedAppointments.map(
+            (appointment) => ({
+              ...appointment,
+              client_name: "Not linked",
+              client_phone: "—",
+              client_email: "—",
+            })
+          );
       }
     }
 
-    const clientsResult = await supabase
-  .from("clients")
-  .select("id, full_name, phone")
-  .order("full_name", {
-    ascending: true,
-  });
-
-if (clientsResult.error) {
-  console.error(
-    "Clients loading error:",
-    clientsResult.error
-  );
-} else if (clientsResult.data) {
-  setClients(clientsResult.data);
-}
-
-    setAppointments(loadedAppointments);
+    setAppointments(
+      loadedAppointments
+    );
 
     /*
      * LOAD CASES
@@ -303,40 +308,54 @@ if (clientsResult.error) {
       });
 
     if (casesResult.error) {
-  console.error(
-    "Cases error message:",
-    casesResult.error?.message
-  );
+      console.error(
+        "Cases error message:",
+        casesResult.error?.message
+      );
 
-  console.error(
-    "Cases error details:",
-    casesResult.error?.details
-  );
+      console.error(
+        "Cases error details:",
+        casesResult.error?.details
+      );
 
-  console.error(
-    "Cases error hint:",
-    casesResult.error?.hint
-  );
+      console.error(
+        "Cases error hint:",
+        casesResult.error?.hint
+      );
 
-  console.error(
-    "Cases error code:",
-    casesResult.error?.code
-  );
+      console.error(
+        "Cases error code:",
+        casesResult.error?.code
+      );
 
-  alert(
-    `Cases error:
+      alert(
+        `Cases error:
 
-code: ${casesResult.error?.code ?? "unknown"}
+code: ${
+          casesResult.error?.code ??
+          "unknown"
+        }
 
-message: ${casesResult.error?.message ?? "unknown"}
+message: ${
+          casesResult.error?.message ??
+          "unknown"
+        }
 
-details: ${casesResult.error?.details ?? "none"}
+details: ${
+          casesResult.error?.details ??
+          "none"
+        }
 
-hint: ${casesResult.error?.hint ?? "none"}`
-  );
-} else if (casesResult.data) {
-  setCases(casesResult.data as CaseRow[]);
-}
+hint: ${
+          casesResult.error?.hint ??
+          "none"
+        }`
+      );
+    } else if (casesResult.data) {
+      setCases(
+        casesResult.data as CaseRow[]
+      );
+    }
 
     setLoadingData(false);
   }
@@ -346,86 +365,81 @@ hint: ${casesResult.error?.hint ?? "none"}`
       load();
     }
   }, [session]);
-async function createAppointment() {
-  if (!appointmentClientId) {
-    alert("Please select a client.");
-    return;
-  }
 
-  if (!appointmentDate) {
-    alert("Please select an appointment date.");
-    return;
-  }
+  async function deleteAppointment(
+    appointmentId: string
+  ) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this appointment?\n\nThis action cannot be undone."
+    );
 
-  if (!appointmentTime) {
-    alert("Please select an appointment time.");
-    return;
-  }
+    if (!confirmed) {
+      return;
+    }
 
-  if (!appointmentPurpose.trim()) {
-    alert("Please enter the purpose.");
-    return;
-  }
+    const { error } = await supabase
+      .from("appointments")
+      .delete()
+      .eq("id", appointmentId);
 
-  setSavingAppointment(true);
+    if (error) {
+      console.error(
+        "Delete appointment error message:",
+        error.message
+      );
 
-  const { data, error } = await supabase
-    .from("appointments")
-    .insert({
-      client_id: appointmentClientId,
-      appointment_date: appointmentDate,
-      appointment_time: appointmentTime,
-      purpose: appointmentPurpose.trim(),
-      status: appointmentStatus,
-      notes: appointmentNotes.trim() || null,
-    })
-    .select()
-    .single();
+      console.error(
+        "Delete appointment error details:",
+        error.details
+      );
 
-  setSavingAppointment(false);
+      console.error(
+        "Delete appointment error hint:",
+        error.hint
+      );
 
-  if (error) {
-    console.error(
-      "Create appointment error:",
-      error
+      console.error(
+        "Delete appointment error code:",
+        error.code
+      );
+
+      alert(
+        `Delete appointment error:
+
+code: ${
+          error.code ?? "unknown"
+        }
+
+message: ${
+          error.message ?? "unknown"
+        }
+
+details: ${
+          error.details ?? "none"
+        }
+
+hint: ${
+          error.hint ?? "none"
+        }`
+      );
+
+      return;
+    }
+
+    setAppointments(
+      (previousAppointments) =>
+        previousAppointments.filter(
+          (appointment) =>
+            appointment.id !==
+            appointmentId
+        )
     );
 
     alert(
-      "Unable to create appointment:\n" +
-        error.message
+      "Appointment deleted successfully."
     );
-
-    return;
   }
 
-  const selectedClient = clients.find(
-    (client) =>
-      client.id === appointmentClientId
-  );
-
-  const newAppointment: Appointment = {
-    ...data,
-    client_name:
-      selectedClient?.full_name ||
-      "Unknown client",
-    client_phone:
-      selectedClient?.phone || "—",
-  };
-
-  setAppointments((previousAppointments) => [
-    ...previousAppointments,
-    newAppointment,
-  ]);
-
-  setAppointmentClientId("");
-  setAppointmentDate("");
-  setAppointmentTime("");
-  setAppointmentPurpose("");
-  setAppointmentNotes("");
-  setAppointmentStatus("Pending");
-
-  alert("Appointment created successfully.");
-}
   async function updateCaseStatus(
     caseId: string,
     status: string
@@ -472,7 +486,8 @@ async function createAppointment() {
     const { error } = await supabase
       .from("cases")
       .update({
-        assigned_advocate: advocateValue,
+        assigned_advocate:
+          advocateValue,
       })
       .eq("id", caseId);
 
@@ -488,7 +503,8 @@ async function createAppointment() {
         currentCase.id === caseId
           ? {
               ...currentCase,
-              assigned_advocate: advocateValue,
+              assigned_advocate:
+                advocateValue,
             }
           : currentCase
       )
@@ -500,19 +516,26 @@ async function createAppointment() {
   ) {
     e.preventDefault();
 
-    const { data, error } = await supabase
-      .from("cases")
-      .insert({
-        case_number: caseNumber.trim(),
-        title: caseTitle.trim(),
-        status: caseStatus,
-        assigned_advocate:
-          caseAdvocate.trim() === ""
-            ? null
-            : caseAdvocate,
-      })
-      .select("*")
-      .single();
+    const { data, error } =
+      await supabase
+        .from("cases")
+        .insert({
+          case_number:
+            caseNumber.trim(),
+
+          title:
+            caseTitle.trim(),
+
+          status:
+            caseStatus,
+
+          assigned_advocate:
+            caseAdvocate.trim() === ""
+              ? null
+              : caseAdvocate,
+        })
+        .select("*")
+        .single();
 
     if (error) {
       alert(error.message);
@@ -606,11 +629,14 @@ async function createAppointment() {
           className="container"
           style={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent:
+              "space-between",
             alignItems: "center",
           }}
         >
-          <b>V G ASSOCIATES · ADMIN</b>
+          <b>
+            V G ASSOCIATES · ADMIN
+          </b>
 
           <button
             className="btn ghost"
@@ -666,7 +692,9 @@ async function createAppointment() {
 
         <main className="main">
           {loadingData && (
-            <p>Loading office data…</p>
+            <p>
+              Loading office data…
+            </p>
           )}
 
           {tab === "dashboard" && (
@@ -676,16 +704,24 @@ async function createAppointment() {
               <div className="stat-grid">
                 <div className="stat">
                   <div>Cases</div>
-                  <b>{cases.length}</b>
+                  <b>
+                    {cases.length}
+                  </b>
                 </div>
 
                 <div className="stat">
-                  <div>Appointments</div>
-                  <b>{appointments.length}</b>
+                  <div>
+                    Appointments
+                  </div>
+
+                  <b>
+                    {appointments.length}
+                  </b>
                 </div>
 
                 <div className="stat">
                   <div>Completed</div>
+
                   <b>
                     {
                       appointments.filter(
@@ -698,7 +734,10 @@ async function createAppointment() {
                 </div>
 
                 <div className="stat">
-                  <div>Active cases</div>
+                  <div>
+                    Active cases
+                  </div>
+
                   <b>
                     {
                       cases.filter(
@@ -754,7 +793,9 @@ async function createAppointment() {
                     marginBottom: 30,
                   }}
                 >
-                  <h2>Add New Case</h2>
+                  <h2>
+                    Add New Case
+                  </h2>
 
                   <form
                     className="form"
@@ -858,10 +899,16 @@ async function createAppointment() {
               <table>
                 <thead>
                   <tr>
-                    <th>Case No.</th>
+                    <th>
+                      Case No.
+                    </th>
+
                     <th>Client</th>
+
                     <th>Title</th>
+
                     <th>Status</th>
+
                     <th>
                       Assigned Advocate
                     </th>
@@ -869,95 +916,105 @@ async function createAppointment() {
                 </thead>
 
                 <tbody>
-                  {cases.map((currentCase) => (
-                    <tr
-                      key={currentCase.id}
-                    >
-                      <td>
-                        {
-                          currentCase.case_number
+                  {cases.map(
+                    (currentCase) => (
+                      <tr
+                        key={
+                          currentCase.id
                         }
-                      </td>
-
-                      <td>
-                        {
-                          currentCase.client_id ||
-                          "Not linked"
-                        }
-                      </td>
-
-                      <td>
-                        {currentCase.title}
-                      </td>
-
-                      <td>
-                        <select
-                          className="input"
-                          value={
-                            currentCase.status ||
-                            "unassigned"
+                      >
+                        <td>
+                          {
+                            currentCase.case_number
                           }
-                          disabled={
-                            savingCase ===
-                            currentCase.id
-                          }
-                          onChange={(e) =>
-                            updateCaseStatus(
-                              currentCase.id,
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="unassigned">
-                            Unassigned
-                          </option>
+                        </td>
 
-                          <option value="active">
-                            Active
-                          </option>
-
-                          <option value="completed">
-                            Completed
-                          </option>
-                        </select>
-                      </td>
-
-                      <td>
-                        <select
-                          className="input"
-                          value={
-                            currentCase.assigned_advocate ||
-                            ""
+                        <td>
+                          {
+                            currentCase.client_id ||
+                            "Not linked"
                           }
-                          disabled={
-                            savingAdvocate ===
-                            currentCase.id
-                          }
-                          onChange={(e) =>
-                            updateCaseAdvocate(
-                              currentCase.id,
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="">
-                            Unassigned
-                          </option>
+                        </td>
 
-                          {ADVOCATES.map(
-                            (advocate) => (
-                              <option
-                                key={advocate}
-                                value={advocate}
-                              >
-                                {advocate}
-                              </option>
-                            )
-                          )}
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
+                        <td>
+                          {
+                            currentCase.title
+                          }
+                        </td>
+
+                        <td>
+                          <select
+                            className="input"
+                            value={
+                              currentCase.status ||
+                              "unassigned"
+                            }
+                            disabled={
+                              savingCase ===
+                              currentCase.id
+                            }
+                            onChange={(e) =>
+                              updateCaseStatus(
+                                currentCase.id,
+                                e.target.value
+                              )
+                            }
+                          >
+                            <option value="unassigned">
+                              Unassigned
+                            </option>
+
+                            <option value="active">
+                              Active
+                            </option>
+
+                            <option value="completed">
+                              Completed
+                            </option>
+                          </select>
+                        </td>
+
+                        <td>
+                          <select
+                            className="input"
+                            value={
+                              currentCase.assigned_advocate ||
+                              ""
+                            }
+                            disabled={
+                              savingAdvocate ===
+                              currentCase.id
+                            }
+                            onChange={(e) =>
+                              updateCaseAdvocate(
+                                currentCase.id,
+                                e.target.value
+                              )
+                            }
+                          >
+                            <option value="">
+                              Unassigned
+                            </option>
+
+                            {ADVOCATES.map(
+                              (advocate) => (
+                                <option
+                                  key={
+                                    advocate
+                                  }
+                                  value={
+                                    advocate
+                                  }
+                                >
+                                  {advocate}
+                                </option>
+                              )
+                            )}
+                          </select>
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             </>
@@ -966,107 +1023,17 @@ async function createAppointment() {
           {tab === "appointments" && (
             <>
               <h1>Appointments</h1>
-              <div
-  style={{
-    marginBottom: "24px",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-  }}
->
-  <h2>New Appointment</h2>
-
-  <div
-    style={{
-      display: "grid",
-      gap: "12px",
-      maxWidth: "600px",
-    }}
-  >
-    <select
-      value={appointmentClientId}
-      onChange={(e) =>
-        setAppointmentClientId(e.target.value)
-      }
-    >
-      <option value="">Select client</option>
-
-      {clients.map((client) => (
-        <option
-          key={client.id}
-          value={client.id}
-        >
-          {client.full_name} — {client.phone}
-        </option>
-      ))}
-    </select>
-
-    <input
-      type="date"
-      value={appointmentDate}
-      onChange={(e) =>
-        setAppointmentDate(e.target.value)
-      }
-    />
-
-    <input
-      type="time"
-      value={appointmentTime}
-      onChange={(e) =>
-        setAppointmentTime(e.target.value)
-      }
-    />
-
-    <input
-      type="text"
-      placeholder="Purpose"
-      value={appointmentPurpose}
-      onChange={(e) =>
-        setAppointmentPurpose(e.target.value)
-      }
-    />
-
-    <textarea
-      placeholder="Notes"
-      value={appointmentNotes}
-      onChange={(e) =>
-        setAppointmentNotes(e.target.value)
-      }
-    />
-
-    <select
-      value={appointmentStatus}
-      onChange={(e) =>
-        setAppointmentStatus(e.target.value)
-      }
-    >
-      <option value="Pending">Pending</option>
-      <option value="Confirmed">Confirmed</option>
-      <option value="Completed">Completed</option>
-      <option value="Cancelled">Cancelled</option>
-    </select>
-
-    <button
-  type="button"
-  disabled={savingAppointment}
-  onClick={createAppointment}
->
-      {savingAppointment
-        ? "Saving..."
-        : "Create Appointment"}
-    </button>
-  </div>
-</div>
 
               <table>
                 <thead>
                   <tr>
                     <th>Client</th>
                     <th>Phone</th>
+                    <th>Email</th>
                     <th>Date</th>
                     <th>Time</th>
-                    <th>Purpose</th>
                     <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
 
@@ -1074,7 +1041,9 @@ async function createAppointment() {
                   {appointments.map(
                     (appointment) => (
                       <tr
-                        key={appointment.id}
+                        key={
+                          appointment.id
+                        }
                       >
                         <td>
                           {appointment.client_name ||
@@ -1088,26 +1057,37 @@ async function createAppointment() {
                         </td>
 
                         <td>
+                          {appointment.client_email ||
+                            "—"}
+                        </td>
+
+                        <td>
                           {
                             appointment.appointment_date
                           }
                         </td>
 
                         <td>
-                          {
-                            appointment.appointment_time ||
-                            "—"
-                          }
-                        </td>
-
-                        <td>
-                          {appointment.purpose ||
+                          {appointment.appointment_time ||
                             "—"}
                         </td>
 
                         <td>
                           {appointment.status ||
                             "—"}
+                        </td>
+
+                        <td>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              deleteAppointment(
+                                appointment.id
+                              )
+                            }
+                          >
+                            Delete
+                          </button>
                         </td>
                       </tr>
                     )
@@ -1119,7 +1099,9 @@ async function createAppointment() {
 
           {tab === "files" && (
             <>
-              <h1>Client Files</h1>
+              <h1>
+                Client Files
+              </h1>
 
               <p>
                 Use Supabase Storage with
