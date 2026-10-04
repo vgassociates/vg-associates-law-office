@@ -12,674 +12,895 @@ import {
   Video,
   Building2,
   CalendarDays,
+  BriefcaseBusiness,
+  FileText,
+  Users,
+  Landmark,
 } from "lucide-react";
-const practices = [
-  [
-    "Civil Disputes",
-    "Legal assistance and representation in civil suits, recovery matters, injunctions and other civil proceedings.",
-  ],
-  [
-  "Criminal Matters",
-  "Legal representation and assistance in criminal matters, subject to the facts and applicable law.",
-],
-  [
-    "Property & Land",
-    "Guidance and representation concerning property, land, documentation and related disputes.",
-  ],
-  [
-    "Family & Matrimonial",
-    "Legal assistance in family and matrimonial matters and related proceedings.",
-  ],
-  [
-    "Consumer Matters",
-    "Assistance with consumer disputes, complaints and related legal proceedings.",
-  ],
-  [
-    "Commercial Matters",
-    "Legal assistance for businesses, contracts, disputes and commercial documentation.",
-  ],
-  [
-    "Legal Notices & Replies",
-    "Assistance with preparation, review and response to legal notices and related matters.",
-  ],
-  [
-    "Legal Opinion – Bank Loan",
-    "Legal opinions and assistance relating to bank loans, documents and related legal requirements.",
-  ],
-];
 
-const consultationPurposes = [
-  "Property / Land Dispute",
-  "Family / Matrimonial Matter",
-  "Civil Dispute",
-  "Criminal Matter",
-  "Court Case / Existing Case",
-  "Legal Notice / Reply",
-  "Agreement / Contract / Document",
-  "Money / Loan / Recovery Matter",
-  "Legal Opinion – Bank Loan",
-  "Business / Company Matter",
-  "Legal Advice / Consultation",
-  "Other",
+import ParticleGlobe from "./components/ParticleGlobe";
+
+const practices = [
+  {
+    title: "Civil Disputes",
+    description:
+      "Representation and legal assistance in civil disputes, recovery matters, injunctions, property disputes and related proceedings.",
+    icon: Scale,
+  },
+  {
+    title: "Criminal Matters",
+    description:
+      "Legal representation and assistance in criminal cases, complaints, bail matters and related proceedings.",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Property & Land",
+    description:
+      "Legal assistance concerning land, property transactions, ownership, possession, documentation and disputes.",
+    icon: Landmark,
+  },
+  {
+    title: "Family & Matrimonial",
+    description:
+      "Professional legal assistance in matrimonial, family, maintenance and related family disputes.",
+    icon: Users,
+  },
+  {
+    title: "Consumer Matters",
+    description:
+      "Representation and assistance in consumer disputes, complaints and matters involving deficient services or products.",
+    icon: FileText,
+  },
+  {
+    title: "Commercial Matters",
+    description:
+      "Legal assistance in commercial disputes, business-related matters, documentation and professional representation.",
+    icon: BriefcaseBusiness,
+  },
+  {
+    title: "Legal Notices & Replies",
+    description:
+      "Preparation and review of legal notices, replies, representations and other formal legal communications.",
+    icon: Mail,
+  },
+  {
+    title: "Legal Opinion – Bank Loan",
+    description:
+      "Legal opinion and documentation support relating to bank loans, property security and related matters.",
+    icon: Building2,
+  },
 ];
 
 const advocates = [
-  "Advocate M B V N G S",
-  "Advocate M H S S B",
-  "Advocate SK.B.A",
+  {
+    name: "MUNIPALLE B V N GANGADHARA SAI",
+    role: "Advocate",
+  },
+  {
+    name: "MUNIPALLE SAI BABU",
+    role: "Advocate",
+  },
+  {
+    name: "KOLA JAHNAVI",
+    role: "Advocate",
+  },
+  {
+    name: "SHAIK BASHA AHMED",
+    role: "Advocate",
+  },
+  {
+    name: "MD FAROOQ",
+    role: "Advocate",
+  },
 ];
 
 export default function Home() {
-    const [showDisclaimer, setShowDisclaimer] = useState(true);
-  const [checkingDisclaimer, setCheckingDisclaimer] = useState(true);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const agreed = localStorage.getItem("vgassociates_disclaimer_agreed");
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
 
-    if (agreed === "true") {
-      setShowDisclaimer(false);
-    }
+    handleScroll();
 
-    setCheckingDisclaimer(false);
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
-  
 
-  const agreeToDisclaimer = () => {
-    localStorage.setItem("vgassociates_disclaimer_agreed", "true");
-    setShowDisclaimer(false);
-  };
+  useEffect(() => {
+    const sections =
+      document.querySelectorAll(".reveal-section");
 
-  if (checkingDisclaimer) {
-    return null;
-  }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.12,
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-  <>
-    {showDisclaimer && (
-      <div className="disclaimer-overlay">
-        <div className="disclaimer-panel">
+    <>
+      {/* =========================
+          DISCLAIMER
+      ========================= */}
 
-          <div className="disclaimer-logo">
-            <Image
-              src="/logo.svg"
-              alt="V G ASSOCIATES"
-              width={64}
-              height={64}
-            />
+      {showDisclaimer && (
+        <div className="disclaimer-overlay">
+          <div className="disclaimer-panel">
+            <div className="disclaimer-logo">
+              <Image
+                src="/vg-logo.jpg"
+                alt="V G ASSOCIATES"
+                width={92}
+                height={92}
+                priority
+              />
+            </div>
+
+            <div className="disclaimer-office">
+              V G ASSOCIATES
+            </div>
+
+            <h2 className="disclaimer-title">
+              Legal Disclaimer
+            </h2>
+
+            <div className="disclaimer-content">
+              <p>
+                The information provided on this website is
+                intended for general informational purposes
+                only.
+              </p>
+
+              <p>
+                The contents of this website should not be
+                treated as legal advice or as a substitute
+                for professional legal consultation.
+              </p>
+
+              <p>
+                Visiting this website or communicating
+                through it does not create an advocate-client
+                relationship.
+              </p>
+
+              <p>
+                Every legal matter depends upon its specific
+                facts and circumstances. Professional advice
+                should be obtained before taking any legal
+                action.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="disclaimer-agree"
+              onClick={() => setShowDisclaimer(false)}
+            >
+              I UNDERSTAND & CONTINUE
+              <ArrowRight size={15} />
+            </button>
           </div>
-
-          <div className="disclaimer-office">
-            V G ASSOCIATES
-          </div>
-
-          <div className="disclaimer-title">
-            DISCLAIMER
-          </div>
-
-          <div className="disclaimer-content">
-
-            <p>
-              The rules of the Bar Council of India restrict advocates
-              from soliciting work or advertising, directly or indirectly.
-            </p>
-
-            <p>
-              By clicking on <strong>“I AGREE”</strong>, the user acknowledges that:
-            </p>
-
-            <ul>
-              <li>
-                The user wishes to obtain information about
-                <strong> V G ASSOCIATES, its advocates, areas of legal practice
-                and office</strong>, solely for the user's own information and use.
-              </li>
-
-              <li>
-                The information contained on this website is made available
-                to the user at the user's specific request. Any access to,
-                transmission, receipt or use of this website, and any information
-                obtained or material viewed or downloaded from it, is at the user's
-                own volition and does not create, and is not intended to create,
-                any advocate-client relationship.
-              </li>
-
-              <li>
-                None of the information contained on this website constitutes
-                a legal opinion or legal advice.
-              </li>
-
-              <li>
-                The information provided on this website is for general
-                informational purposes and should not be relied upon as a
-                substitute for obtaining independent legal advice in relation
-                to any specific legal matter.
-              </li>
-            </ul>
-
-            <p>
-              <strong>V G ASSOCIATES</strong> shall not be responsible for any
-              consequence arising from any action taken by a user in reliance
-              upon information or material contained on this website. Persons
-              having specific legal concerns should seek independent legal advice
-              appropriate to their circumstances.
-            </p>
-
-          </div>
-
-          <button
-            type="button"
-            className="disclaimer-agree"
-            onClick={agreeToDisclaimer}
-          >
-            I AGREE
-          </button>
-
         </div>
-      </div>
-    )}
+      )}
 
-    <nav className="nav">
+      {/* =========================
+          NAVIGATION
+      ========================= */}
+
+      <nav
+        className={`nav ${
+          scrolled ? "nav-scrolled" : ""
+        }`}
+      >
         <div className="container nav-inner">
-          <a className="brand" href="#">
-            <Image
-              src="/logo.svg"
-              alt="VG Associates logo"
-              width={44}
-              height={44}
-            />
-            <span>V G ASSOCIATES</span>
+          <a href="#home" className="brand">
+            <div className="brand-logo-wrap">
+              <Image
+                src="/vg-logo.jpg"
+                alt="V G ASSOCIATES"
+                width={48}
+                height={48}
+              />
+            </div>
+
+            <div className="brand-text">
+              <span>V G ASSOCIATES</span>
+              <small>LAW OFFICE</small>
+            </div>
           </a>
 
           <div className="links">
             <a href="#about">About</a>
-            <a href="#advocates">Advocates</a>
-            <a href="#practice">Legal Services</a>
-            <a href="#facilities">Facilities</a>
-            <a href="/client">Book Appointment</a>
+            <a href="#principal">Principal Advocate</a>
+            <a href="#team">Legal Team</a>
+            <a href="#services">Services</a>
+            <a href="#appointment">Appointment</a>
             <a href="#contact">Contact</a>
-            <a href="/admin">Admin</a>
           </div>
         </div>
       </nav>
 
-      <header className="hero">
-  <div className="container">
-    <div className="eyebrow">
-      Advocates & Legal Services · Ponnur
-    </div>
+      {/* =========================
+          HERO
+      ========================= */}
 
-    <h1>
-      Justice begins with
-      <br />
-      the right guidance.
-    </h1>
-
-    <p className="hero-quote">
-      “Every legal matter deserves careful attention,
-      clear guidance and responsible representation.”
-    </p>
-
-    <p className="hero-intro"> 
-  V G ASSOCIATES has been providing legal services since 1995, 
-  with experience in handling a range of civil, criminal, 
-  property, family, commercial and other legal matters. 
-  The office provides legal assistance, advice and 
-  representation before courts and other legal forums, 
-  according to the nature of each matter and applicable law. 
-</p>
-
-    <div className="actions">
-      <a className="btn gold" href="/client">
-        Book an Appointment
-        <ArrowRight size={16} />
-      </a>
-
-      <a
-        className="btn ghost"
-        href="tel:+919491139540"
-      >
-        Call 94911 39540
-      </a>
-    </div>
-  </div>
-</header>
-
-      <section id="about" className="section">
-        <div className="container about">
-          <div>
-  <div className="eyebrow">The Office</div>
-
-            <h2>About V G ASSOCIATES</h2>
-
-            <p className="section-intro">
-              V G ASSOCIATES is a legal office based in Sai Nagar,
-              Ponnur, Guntur District, Andhra Pradesh, providing
-              legal assistance and representation across a range
-              of matters.
-            </p>
-
-            <p className="section-intro">
-              The office is led by{" "}
-              <b>Advocate M P R V P</b> and is focused on
-              professional communication, careful attention to
-              legal matters and accessible client service.
-            </p>
-
-            <p className="quote">
-              “Every matter deserves careful attention, clear
-              communication and responsible legal representation.”
-            </p>
+      <main id="home">
+        <section className="hero">
+          <div className="hero-particle-background">
+            <ParticleGlobe />
           </div>
 
-          <div className="card">
-            <Scale size={32} color="#c8a45b" />
+          <div className="hero-overlay" />
 
-            <h3>Legal Representation</h3>
+          <div className="container hero-content">
+            <div className="hero-copy">
+              <div className="hero-eyebrow">
+                <span />
+                ADVOCATES & LEGAL SERVICES
+              </div>
 
-            <p>
-              Assistance and representation in appropriate legal
-              matters before courts and other relevant forums.
-            </p>
-
-            <ShieldCheck size={32} color="#c8a45b" />
-
-            <h3>Client Focus</h3>
-
-            <p>
-              Clear communication, organized information and
-              convenient appointment options for clients.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="advocates" className="section cream">
-        <div className="container">
-          <div className="section-head">
-            <div>
-              <div className="eyebrow">Principal Advocate</div>
-
-              <h2>Advocate M P R V P</h2>
-            </div>
-
-            <p className="section-intro">
-              Principal Advocate of V G ASSOCIATES with over
-              30 years of experience in legal practice and
-              professional service.
-            </p>
-          </div>
-
-          <div className="about">
-            <div className="card">
-              <Scale size={36} color="#c8a45b" />
-
-              <h3>Advocate M P R V P</h3>
-
-              <p>
-                <b>Principal Advocate</b>
-              </p>
-
-              <p>
-                With over 30 years of experience in legal practice,
-                Advocate M P R V P has served in various professional
-                and legal capacities.
-              </p>
-
-              <h3>Qualifications</h3>
-
-              <p>
-                B.Com, LL.B, LL.M
+              <h1>
+                Justice begins
                 <br />
-                <b>University Gold Medalist</b>
+                <span>with the right guidance.</span>
+              </h1>
+
+              <p className="hero-quote">
+                “Law is not merely about resolving disputes.
+                It is about protecting rights, finding
+                solutions and pursuing justice.”
               </p>
 
-              <h3>Professional Experience</h3>
-
-              <ul>
-                <li>Ex. A.P.P.</li>
-                <li>Ex. A.G.P.</li>
-                <li>Ex. Municipal Standing Counsel</li>
-                <li>Ex. Bar President, Ponnur</li>
-                <li>Panel Advocate to the Banks</li>
-              </ul>
-            </div>
-
-            <div className="card">
-              <ShieldCheck size={32} color="#c8a45b" />
-
-              <h3>Legal Experience</h3>
-
-              <p>
-                Extensive experience in legal practice,
-                representation and professional legal services
-                across a range of matters.
+              <p className="hero-intro">
+                V G ASSOCIATES is a professional law office
+                providing legal representation, consultation
+                and assistance across Andhra Pradesh, with a
+                strong professional presence in Guntur
+                District.
               </p>
 
-              <Scale size={32} color="#c8a45b" />
+              <div className="actions hero-actions">
+                <a
+                  href="/client"
+                  className="btn gold"
+                >
+                  Book an Appointment
+                  <ArrowRight size={15} />
+                </a>
 
-              <h3>Professional Service</h3>
-
-              <p>
-                The office provides legal assistance with a focus
-                on careful attention to each matter, clear
-                communication and responsible representation.
-              </p>
+                <a
+                  href="tel:9491139540"
+                  className="btn ghost"
+                >
+                  <Phone size={15} />
+                  Call Office
+                </a>
+              </div>
             </div>
           </div>
 
-          <div style={{ marginTop: "32px" }}>
-            <div className="eyebrow">Our Advocates</div>
+          <div className="hero-bottom">
+            <div className="hero-bottom-line" />
 
-            <h2>Legal Team</h2>
+            <div className="hero-scroll">
+              <span>SCROLL TO EXPLORE</span>
+              <span className="scroll-arrow">↓</span>
+            </div>
+
+            <div className="hero-bottom-line" />
+          </div>
+        </section>
+
+        {/* =========================
+            ABOUT
+        ========================= */}
+
+        <section
+          id="about"
+          className="section reveal-section"
+        >
+          <div className="container">
+            <div className="about">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  ABOUT THE OFFICE
+                </div>
+
+                <h2>
+                  Professional
+                  <br />
+                  <span>legal service.</span>
+                </h2>
+              </div>
+
+              <div>
+                <p className="section-intro">
+                  V G ASSOCIATES is a law office based in
+                  Ponnur, providing professional legal
+                  services and representation across Andhra
+                  Pradesh.
+                </p>
+
+                <p>
+                  Our approach is built around understanding
+                  each matter carefully, providing practical
+                  legal guidance and representing clients with
+                  professionalism, preparation and integrity.
+                </p>
+
+                <p>
+                  With experience across civil, criminal,
+                  property, family, consumer and commercial
+                  matters, the office assists individuals,
+                  families, businesses and institutions in
+                  navigating legal issues with clarity and
+                  confidence.
+                </p>
+
+                <div className="quote">
+                  “Professional representation begins with
+                  understanding the matter, protecting the
+                  client’s interests and pursuing the most
+                  appropriate legal course.”
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================
+            PRINCIPAL ADVOCATE
+        ========================= */}
+
+        <section
+          id="principal"
+          className="section cream reveal-section"
+        >
+          <div className="container">
+            <div className="section-head">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  PRINCIPAL ADVOCATE
+                </div>
+
+                <h2>
+                  Experience.
+                  <br />
+                  <span>Professionalism.</span>
+                </h2>
+              </div>
+
+              <p>
+                V G ASSOCIATES is led by a senior advocate
+                with extensive experience in legal practice,
+                professional representation and public legal
+                service.
+              </p>
+            </div>
+
+            <div className="advocate-feature-card">
+              <div className="card-number">
+                01
+              </div>
+
+              <div className="advocate-main-details">
+                <h3>
+                  MUNIPALLE PANDU RANGA
+                  <br />
+                  VITTAL PRASAD
+                </h3>
+
+                <p className="advocate-role">
+                  Principal Advocate
+                </p>
+
+                <p className="advocate-experience">
+                  Over 30 years of experience in legal
+                  practice, representation and professional
+                  service.
+                </p>
+              </div>
+
+              <div className="advocate-feature-right">
+                <Scale size={38} strokeWidth={1} />
+
+                <span>
+                  Experienced legal representation
+                  and professional guidance
+                </span>
+              </div>
+            </div>
+
+            <div className="about advocate-about-layout">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  QUALIFICATIONS
+                </div>
+
+                <h2>
+                  Academic
+                  <br />
+                  <span>background.</span>
+                </h2>
+              </div>
+
+              <div>
+                <p className="section-intro">
+                  A strong academic foundation combined with
+                  extensive professional experience forms the
+                  basis of the office&apos;s legal practice.
+                </p>
+
+                <p>
+                  <strong>B.Com</strong>
+                  <br />
+                  <strong>LL.B</strong>
+                  <br />
+                  <strong>LL.M</strong>
+                  <br />
+                  <strong>University Gold Medalist</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className="about advocate-about-layout">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  PROFESSIONAL EXPERIENCE
+                </div>
+
+                <h2>
+                  A career of
+                  <br />
+                  <span>service.</span>
+                </h2>
+              </div>
+
+              <div>
+                <p className="section-intro">
+                  Professional experience extending across
+                  legal practice, public service, institutional
+                  representation and the Bar.
+                </p>
+
+                <p>
+                  Ex. A.P.P.
+                  <br />
+                  Ex. A.G.P.
+                  <br />
+                  Ex. Municipal Standing Counsel
+                  <br />
+                  Ex. Bar President, Ponnur
+                  <br />
+                  Panel Advocate to the Banks
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================
+            LEGAL TEAM
+        ========================= */}
+
+        <section
+          id="team"
+          className="section reveal-section"
+        >
+          <div className="container">
+            <div className="section-head">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  LEGAL TEAM
+                </div>
+
+                <h2>
+                  People behind
+                  <br />
+                  <span>the practice.</span>
+                </h2>
+              </div>
+
+              <p>
+                Our legal team works with a professional,
+                coordinated approach, supporting clients
+                across different areas of legal practice.
+              </p>
+            </div>
 
             <div className="grid">
-              {advocates.map((advocate) => (
-                <article className="card" key={advocate}>
-                  <Scale size={28} color="#c8a45b" />
+              {advocates.map((advocate, index) => (
+                <div
+                  className="team-card"
+                  key={advocate.name}
+                >
+                  <div className="card-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
 
-                  <h3>{advocate}</h3>
+                  <div className="team-icon">
+                    <Scale
+                      size={34}
+                      strokeWidth={1}
+                    />
+                  </div>
 
-                  <p>
-                    Advocate associated with V G ASSOCIATES.
-                  </p>
-                </article>
+                  <h3>{advocate.name}</h3>
+
+                  <p>{advocate.role}</p>
+                </div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="practice" className="section">
-        <div className="container">
-          <div className="section-head">
-            <div>
-              <div className="eyebrow">Practice Areas</div>
+        {/* =========================
+            LEGAL SERVICES
+        ========================= */}
 
-              <h2>Legal Services</h2>
+        <section
+          id="services"
+          className="section cream reveal-section"
+        >
+          <div className="container">
+            <div className="section-head">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  PRACTICE AREAS
+                </div>
+
+                <h2>
+                  Legal
+                  <br />
+                  <span>services.</span>
+                </h2>
+              </div>
+
+              <p>
+                Professional legal assistance across a broad
+                range of matters for individuals, families,
+                businesses and institutions.
+              </p>
             </div>
 
-            <p className="section-intro">
-  Information about the areas of legal practice in which
-  V G ASSOCIATES provides legal assistance and representation.
-</p>
+            <div className="grid">
+              {practices.map((practice, index) => {
+                const Icon = practice.icon;
+
+                return (
+                  <div
+                    className="service-card"
+                    key={practice.title}
+                  >
+                    <div className="card-number">
+                      {String(index + 1).padStart(2, "0")}
+                    </div>
+
+                    <Icon
+                      size={34}
+                      strokeWidth={1}
+                    />
+
+                    <h3>{practice.title}</h3>
+
+                    <p>{practice.description}</p>
+
+                    <ArrowRight
+                      size={18}
+                      strokeWidth={1.5}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
+        </section>
 
-          <div className="grid">
-            {practices.map(([title, description]) => (
-              <article className="card" key={title}>
-                <h3>{title}</h3>
+        {/* =========================
+            FACILITIES
+        ========================= */}
 
-                <p>{description}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+        <section
+          className="section reveal-section"
+        >
+          <div className="container">
+            <div className="section-head">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  OFFICE FACILITIES
+                </div>
 
-      <section id="facilities" className="section cream">
-        <div className="container">
-          <div className="section-head">
-            <div>
-              <div className="eyebrow">Client Facilities</div>
+                <h2>
+                  Built around
+                  <br />
+                  <span>your needs.</span>
+                </h2>
+              </div>
 
-              <h2>Facilities We Provide</h2>
+              <p>
+                A professional environment designed to make
+                consultation, communication and legal
+                assistance more accessible.
+              </p>
             </div>
 
-            <p className="section-intro">
-              Convenient options designed to make it easier for
-              clients to connect with the office.
-            </p>
+            <div className="grid">
+              <div className="card">
+                <MapPin
+                  size={34}
+                  strokeWidth={1}
+                />
+
+                <h3>
+                  Accessible
+                  <br />
+                  Location
+                </h3>
+
+                <p>
+                  Located at Sai Nagar, Ponnur, Guntur
+                  District, Andhra Pradesh.
+                </p>
+              </div>
+
+              <div className="card">
+                <Video
+                  size={34}
+                  strokeWidth={1}
+                />
+
+                <h3>
+                  Video
+                  <br />
+                  Consultation
+                </h3>
+
+                <p>
+                  Convenient consultation options for
+                  clients who are unable to visit the office
+                  in person.
+                </p>
+              </div>
+
+              <div className="card">
+                <CalendarDays
+                  size={34}
+                  strokeWidth={1}
+                />
+
+                <h3>
+                  Scheduled
+                  <br />
+                  Appointments
+                </h3>
+
+                <p>
+                  Book an appointment through the online
+                  appointment portal at a convenient
+                  available time.
+                </p>
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div className="grid">
-            <article className="card">
-              <Building2 size={30} color="#c8a45b" />
+        {/* =========================
+            APPOINTMENT
+        ========================= */}
 
-              <h3>Visit Our Office</h3>
+        <section
+          id="appointment"
+          className="section cream reveal-section"
+        >
+          <div className="container">
+            <div className="appointment-card">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  CONSULTATION
+                </div>
 
-              <p>
-                Clients can visit our office in Ponnur for an
-                in-person consultation with an advocate.
-              </p>
-            </article>
+                <h3>
+                  Let&apos;s discuss
+                  <br />
+                  your legal matter.
+                </h3>
 
-            <article className="card">
-              <Video size={30} color="#c8a45b" />
+                <p>
+                  Schedule an appointment with V G
+                  ASSOCIATES for professional legal
+                  consultation and assistance.
+                </p>
+              </div>
 
-              <h3>Online / Video Consultation</h3>
-
-              <p>
-                Clients can choose an online or video consultation
-                when visiting the office is not convenient.
-              </p>
-            </article>
-
-            <article className="card">
-              <CalendarDays size={30} color="#c8a45b" />
-
-              <h3>Online Appointment Booking</h3>
-
-              <p>
-                Clients can use the website to select a convenient
-                date and time for an appointment.
-              </p>
-            </article>
-
-            <article className="card">
-              <ShieldCheck size={30} color="#c8a45b" />
-
-              <h3>Professional Legal Assistance</h3>
-
-              <p>
-                Matters are handled with attention to the facts,
-                applicable law and the client's requirements.
-              </p>
-            </article>
+              <a
+                href="/client"
+                className="btn gold"
+              >
+                Book an Appointment
+                <ArrowRight size={15} />
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="appointment" className="section">
-        <div className="container">
-          <div className="section-head">
-            <div>
-              <div className="eyebrow">Appointments</div>
+        {/* =========================
+            CONTACT
+        ========================= */}
 
-              <h2>Book an Appointment</h2>
+        <section
+          id="contact"
+          className="section contact reveal-section"
+        >
+          <div className="container">
+            <div className="section-head">
+              <div>
+                <div className="eyebrow">
+                  <span />
+                  CONTACT
+                </div>
+
+                <h2>
+                  Visit or
+                  <br />
+                  <span>get in touch.</span>
+                </h2>
+              </div>
+
+              <p>
+                For appointments, consultations and general
+                office enquiries, please contact V G
+                ASSOCIATES.
+              </p>
             </div>
 
-            <p className="section-intro">
-              Choose how you would like to meet the advocate and
-              tell us what you need help with.
-            </p>
+            <div className="contact-box">
+              <div className="contact-row">
+                <MapPin
+                  size={22}
+                  strokeWidth={1.4}
+                />
+
+                <div>
+                  <span className="label">
+                    OFFICE
+                  </span>
+
+                  <span className="value">
+                    V G ASSOCIATES
+                    <br />
+                    Sai Nagar, Ponnur
+                    <br />
+                    Guntur District,
+                    Andhra Pradesh – 522124
+                  </span>
+                </div>
+              </div>
+
+              <div className="contact-row">
+                <Phone
+                  size={22}
+                  strokeWidth={1.4}
+                />
+
+                <div>
+                  <span className="label">
+                    PHONE
+                  </span>
+
+                  <a
+                    href="tel:9491139540"
+                    className="value"
+                  >
+                    94911 39540
+                  </a>
+                </div>
+              </div>
+
+              <div className="contact-row">
+                <Mail
+                  size={22}
+                  strokeWidth={1.4}
+                />
+
+                <div>
+                  <span className="label">
+                    EMAIL
+                  </span>
+
+                  <a
+                    href="mailto:vgassociates1995@gmail.com"
+                    className="value"
+                  >
+                    vgassociates1995@gmail.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="contact-actions">
+                <a
+                  href="/client"
+                  className="btn gold"
+                >
+                  Book an Appointment
+                  <CalendarDays size={15} />
+                </a>
+
+                <a
+                  href="tel:9491139540"
+                  className="btn ghost"
+                >
+                  <Phone size={15} />
+                  Call Office
+                </a>
+              </div>
+
+              <div className="contact-map">
+                <iframe
+                  title="V G ASSOCIATES Location"
+                  src="https://www.google.com/maps?q=V%20G%20Associates%2C%20Sai%20Nagar%2C%20Ponnur%2C%20Guntur%20District%2C%20Andhra%20Pradesh%20522124&output=embed"
+                  width="100%"
+                  height="420"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </div>
           </div>
+        </section>
+      </main>
 
-          <div className="grid">
-            <article className="card">
-              <Video size={30} color="#c8a45b" />
-
-              <h3>
-                How would you like to meet the advocate?
-              </h3>
-
-              <p>
-                <b>Visit Our Office</b>
-              </p>
-
-              <p>
-                Meet the advocate in person at our office in
-                Ponnur.
-              </p>
-
-              <p>
-                <b>Online / Video Consultation</b>
-              </p>
-
-              <p>
-                Speak with the advocate online when an office
-                visit is not convenient.
-              </p>
-            </article>
-
-            <article className="card">
-              <Scale size={30} color="#c8a45b" />
-
-              <h3>What do you need help with?</h3>
-
-              <ul>
-                {consultationPurposes.map((purpose) => (
-                  <li key={purpose}>{purpose}</li>
-                ))}
-              </ul>
-            </article>
-          </div>
-
-          <div
-            className="actions"
-            style={{ marginTop: "28px" }}
-          >
-            <a className="btn gold" href="/client">
-              Book an Appointment
-              <ArrowRight size={16} />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section id="contact" className="section cream">
-  <div className="container contact">
-
-    <div>
-      <div className="eyebrow">Contact Us</div>
-
-      <h2>Get in Touch</h2>
-
-      <p className="section-intro">
-        Contact V G ASSOCIATES for legal assistance,
-        consultation and appointment information.
-      </p>
-
-      <div className="actions">
-
-        <a
-          className="btn gold"
-          href="tel:+919491139540"
-        >
-          <Phone size={16} />
-          Call Office
-        </a>
-
-        <a
-          className="btn"
-          href="https://wa.me/919491139540"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          WhatsApp
-        </a>
-
-        <a
-          className="btn"
-          href="mailto:vgassociates1995@gmail.com"
-        >
-          <Mail size={16} />
-          Email
-        </a>
-
-      </div>
-
-      <div style={{ marginTop: "30px" }}>
-
-        <div className="contact-row">
-          <div className="label">Office</div>
-
-          <div className="value">
-            Sai Nagar, Ponnur, Guntur District,
-            Andhra Pradesh – 522124
-          </div>
-        </div>
-
-        <div className="contact-row">
-          <div className="label">
-            <Phone size={16} />
-          </div>
-
-          <div className="value">
-            <a href="tel:+919491139540">
-              94911 39540
-            </a>
-          </div>
-        </div>
-
-        <div className="contact-row">
-          <div className="label">
-            <Mail size={16} />
-          </div>
-
-          <div className="value">
-            <a href="mailto:vgassociates1995@gmail.com">
-              vgassociates1995@gmail.com
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <div className="contact-box">
-
-      <div className="label">Office Location</div>
-
-      <div
-        style={{
-          marginTop: "12px",
-          overflow: "hidden",
-          borderRadius: "8px",
-          border: "1px solid rgba(255,255,255,.15)",
-        }}
-      >
-        <iframe
-          src="https://www.google.com/maps?q=16.069815,80.5520079&z=18&output=embed"
-          width="100%"
-          height="360"
-          style={{ border: 0, display: "block" }}
-          loading="lazy"
-          allowFullScreen
-          referrerPolicy="no-referrer-when-downgrade"
-        />
-      </div>
-
-      <div style={{ marginTop: "18px" }}>
-        <a
-          className="btn gold"
-          href="https://www.google.com/maps/dir/?api=1&destination=16.069815,80.5520079"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <MapPin size={16} />
-          Get Directions
-        </a>
-      </div>
-
-    </div>
-
-  </div>
-</section>
+      {/* =========================
+          FOOTER
+      ========================= */}
 
       <footer className="footer">
         <div className="container footer-inner">
           <div>
-            © {new Date().getFullYear()} V G ASSOCIATES.
-            All rights reserved.
+            <strong>V G ASSOCIATES</strong>
+
+            <span>
+              ADVOCATES & LEGAL SERVICES
+            </span>
           </div>
 
-          <div className="disclaimer">
-            This website is for general information and does not
-            constitute legal advice. No advocate-client relationship
-            is created solely by visiting or contacting this website.
-          </div>
+          <p>
+            © {new Date().getFullYear()} V G ASSOCIATES.
+            All rights reserved.
+          </p>
+
+          <a href="#home">
+            Back to top ↑
+          </a>
         </div>
       </footer>
     </>
   );
 }
-
